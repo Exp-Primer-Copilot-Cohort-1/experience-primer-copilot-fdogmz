@@ -9,7 +9,7 @@ const app = express();
 // import body-parser
 const bodyParser = require('body-parser');
 
-// import mongoose
+// import mongoose once again
 const mongoose = require('mongoose');
 
 // import path

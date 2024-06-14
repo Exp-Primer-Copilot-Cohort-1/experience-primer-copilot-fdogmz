@@ -1,66 +1,22 @@
 // create web server
 
-// import express
 const express = require('express');
-
-// create express app
-const app = express();
-
-// import body-parser
 const bodyParser = require('body-parser');
+const app = express();
+const comments = require('./comments');
 
-// import mongoose once again
-const mongoose = require('mongoose');
-
-// import path
-const path = require('path');
-
-// import comments model
-const Comment = require('./models/comment');
-
-// connect to mongoose
-mongoose.connect('mongodb://localhost/comments');
-mongoose.Promise = global.Promise;
-
-// use body-parser
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// set view engine
-app.set('view engine', 'ejs');
-
-// set views directory
-app.set('views', path.join(__dirname, 'views'));
-
-// get all comments
 app.get('/comments', (req, res) => {
-    Comment.find({}, (err, comments) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('comments/index', { comments: comments });
-        }
-    });
+  res.json(comments.getComments());
 });
 
-// create new comment
 app.post('/comments', (req, res) => {
-    Comment.create(req.body.comment, (err, comment) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.redirect('/comments');
-        }
-    });
+  const { text } = req.body;
+  comments.addComment(text);
+  res.json(comments.getComments());
 });
 
-// create new comment form
-app.get('/comments/new', (req, res) => {
-    res.render('comments/new');
+app.listen(3001, () => {
+  console.log('Server is listening on port 3001');
 });
-
-// start server
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
-});
-
